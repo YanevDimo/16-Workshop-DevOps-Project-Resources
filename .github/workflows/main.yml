@@ -21,11 +21,21 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          context: ./backend
-          push: true
-          tags: dimoy/backend:latest
+        run: |
+          # Build the backend image
+          docker build -t dimoy/backend:latest ./backend
+          
+          # Tag the image with current date and time
+          DATE_TIME_TAG=$(date +"%Y%m%d%H%M%S")
+          docker tag dimoy/backend:latest dimoy/backend:$DATE_TIME_TAG
+          
+          # Push the images
+          docker push dimoy/backend:latest
+          docker push dimoy/backend:$DATE_TIME_TAG
+          
+        env:
+          DOCKER_BUILDKIT: 1
+
   frontend:
     runs-on: ubuntu-latest
     steps:
@@ -41,8 +51,17 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          context: ./frontend
-          push: true
-          tags: dimoy/frontend:latest
+        run: |
+          # Build the frontend image
+          docker build -t dimoy/frontend:latest ./frontend
+          
+          # Tag the image with current date and time
+          DATE_TIME_TAG=$(date +"%Y%m%d%H%M%S")
+          docker tag dimoy/frontend:latest dimoy/frontend:$DATE_TIME_TAG
+          
+          # Push the images
+          docker push dimoy/frontend:latest
+          docker push dimoy/frontend:$DATE_TIME_TAG
+          
+        env:
+          DOCKER_BUILDKIT: 1
